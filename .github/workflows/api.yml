@@ -1,0 +1,52 @@
+name: Deploy the API to the PHP host
+
+# As in ../www.rezatyrakety.cz: settings.php is written from secrets, then uploaded over FTP.
+# Only api/ goes up, into FTP_SERVER_DIR (e.g. /www/mlog/api/, with the trailing slash).
+#
+# Secrets: FTP_SERVER, FTP_USERNAME, FTP_PASSWORD, FTP_SERVER_DIR,
+#          MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MY_DATABASE (the same names as rezatyrakety.cz),
+#          MLOG_KEY (the access key, openssl rand -hex 24), MLOG_ORIGIN (optional, e.g. https://juhyxx.github.io)
+on:
+  push:
+    branches: [master]
+    paths: ['api/**', '.github/workflows/api.yml']
+  workflow_dispatch:
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # var_export quotes every value, so passwords with quotes or $ can't break the PHP.
+      - name: Write api/settings.php
+        env:
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MY_DATABASE }}
+          ORIGIN: ${{ secrets.MLOG_ORIGIN }}
+          MLOG_KEY: ${{ secrets.MLOG_KEY }}
+        run: |
+          [ ${#MLOG_KEY} -ge 8 ] || { echo "::error::MLOG_KEY is missing or shorter than 8 characters"; exit 1; }
+          php -r '
+            $s = "<?php\nclass Settings\n{\n";
+            foreach (["MYSQL_HOST", "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_DATABASE", "ORIGIN"] as $k) {
+              $s .= "    const $k = " . var_export((string)getenv($k), true) . ";\n";
+            }
+            $s .= "    const KEYS = " . var_export([getenv("MLOG_KEY") => "me"], true) . ";\n}\n";
+            file_put_contents("api/settings.php", $s);
+          '
+          php -l api/settings.php
+
+      - name: Upload api/
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./api/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          protocol: ftp
+          dangerous-clean-slate: false
+          security: loose

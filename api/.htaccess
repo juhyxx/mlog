@@ -1,0 +1,5 @@
+# settings.php holds the database password and the access keys: never serve it.
+<FilesMatch "^(settings|settings\.example|config)\.php$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

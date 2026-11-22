@@ -1,0 +1,24 @@
+{
+  "name": "Mlog — musician's practice log",
+  "short_name": "Mlog",
+  "description": "Start a practice with a tap, time it, and see how long you practise. Works offline.",
+  "id": "/mlog/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1c1c1c",
+  "theme_color": "#1c1c1c",
+  "categories": ["music", "education", "productivity"],
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "img/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "share_target": {
+    "action": "./",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": { "title": "title", "text": "text", "url": "url" }
+  }
+}

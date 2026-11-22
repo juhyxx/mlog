@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mlog</title>
+  <meta name="description" content="A musician's practice log: start a practice with a tap, time it, and see how long you practise. Works offline.">
+  <meta name="theme-color" content="#1c1c1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mlog">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="preload" href="fonts/Silkscreen-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <script>
+    // .booting hides the page until src/main.js has put the text into the right language.
+    document.documentElement.classList.add('booting');
+  </script>
+  <link rel="stylesheet" href="src/styles.css">
+  <script type="module" src="src/main.js"></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./" data-i18n-label="top.home">
+      <svg class="brand-mark" viewBox="0 0 18 21" aria-hidden="true" shape-rendering="crispEdges">
+        <path d="M7 0h4v1h-4zM6 1h6v1h-6zM5 2h1v1h-1zM7 2h4v1h-4zM12 2h1v1h-1zM6 3h6v1h-6zM7 4h4v1h-4zM7 5h4v1h-4zM2 6h1v1h-1zM4 6h1v1h-1zM7 6h4v1h-4zM13 6h1v1h-1zM15 6h1v1h-1zM3 7h1v1h-1zM6 7h6v1h-6zM14 7h1v1h-1zM3 8h12v1h-12zM7 9h4v1h-4zM7 10h1v1h-1zM9 10h2v1h-2zM7 11h4v1h-4zM3 12h12v1h-12zM3 13h1v1h-1zM6 13h6v1h-6zM14 13h1v1h-1zM2 14h1v1h-1zM4 14h1v1h-1zM7 14h4v1h-4zM13 14h1v1h-1zM15 14h1v1h-1zM8 15h3v1h-3zM8 16h3v1h-3zM9 17h3v1h-3zM10 18h3v1h-3zM15 18h1v1h-1zM11 19h5v1h-5zM12 20h3v1h-3z"/>
+      </svg>
+      <span class="brand-name">MLOG</span>
+    </a>
+    <div class="top-actions">
+      <button type="button" id="installBtn" class="btn" hidden data-i18n="top.install">Install</button>
+      <button type="button" id="settingsBtn" class="btn icon" aria-label="Settings" data-i18n-label="top.settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="16" cy="7" r="2.2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="10" cy="17" r="2.2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <i id="statusLed" class="sync-led" data-status="off"></i>
+      </button>
+    </div>
+  </header>
+  <main class="home">
+    <section id="now" class="now"></section>
+    <section id="log" class="block log"></section>
+    <section id="stats" class="block stats"></section>
+  </main>
+  <div id="player" class="player" hidden></div>
+  <dialog id="settings" aria-label="Settings"></dialog>
+  <dialog id="editor"></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <noscript><p class="noscript">Mlog needs JavaScript.</p></noscript>
+</body>
+</html>
