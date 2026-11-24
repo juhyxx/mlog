@@ -309,39 +309,25 @@ main.home {
 .preset .tag.own { color: var(--c); }
 .preset .tag.own .ico { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--c) 70%, transparent)); }
 
-/* an instrument's icon in a line of text, in the instrument's colour */
-.mini-ico { display: inline-block; width: 12px; height: 12px; margin-right: 5px; vertical-align: -2px; color: var(--c, var(--led)); }
-.mini-ico .ico { display: block; width: 100%; height: 100%; fill: currentColor; shape-rendering: crispEdges; }
-
-/* an LED: dark until lit, in the instrument's colour (--c, set on the row) */
-.led {
-  flex: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.5));
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 0 2px rgba(0, 0, 0, 0.35), 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent);
-}
-.led.on {
-  background: radial-gradient(circle at 50% 35%, #fff 0 12%, var(--c) 45%);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35), 0 0 8px var(--c), 0 0 18px color-mix(in srgb, var(--c) 50%, transparent);
-}
-
 /* REC and the timer, blinking like a recorder's light */
 .rec { display: inline-flex; align-items: center; gap: 6px; color: var(--danger); text-shadow: 0 0 6px var(--danger); }
 .rec i { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 6px var(--danger); animation: blink 1s steps(2) infinite; }
-.rec [data-clock] { color: var(--led); text-shadow: 0 0 6px var(--led); font-variant-numeric: tabular-nums; }
 
 /* ------------------------------------------------------------- now */
 
 .now { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 18px; align-items: center; }
-.now-lcd { --c: var(--led); display: grid; gap: 8px; padding: 14px 18px 16px; }
+.now-lcd { --c: var(--led); display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 14px 18px 16px; }
 .now-label { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
-.now-today { margin-left: auto; }
 .lcd .now-big { font-size: 54px; line-height: 1; font-variant-numeric: tabular-nums; }
 .now-big small { margin: 0 12px 0 6px; font-size: 16px; }
 .now-big small:last-child { margin-right: 0; }
-.lcd .now-what { display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 15px; letter-spacing: 0; line-height: 1.3; overflow-wrap: anywhere; }
+/* the third line, the same height running or not: what runs (icon, type, description), or the week */
+.lcd .now-what, .lcd .now-meta { display: flex; align-items: center; gap: 10px; min-height: 22px; }
+.lcd .now-what { font-size: 13px; letter-spacing: 0.04em; line-height: 1.3; white-space: nowrap; }
+.now-type { flex: none; color: var(--muted); }
+.now-desc { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+.now-ico { flex: none; width: 20px; height: 20px; color: var(--c); filter: drop-shadow(0 0 4px var(--c)); }
+.now-ico .ico { display: block; width: 100%; height: 100%; fill: currentColor; shape-rendering: crispEdges; }
 .now-keys { display: flex; flex-direction: column; gap: 10px; min-width: 210px; }
 .now-keys .hint { max-width: 240px; }
 
@@ -361,20 +347,19 @@ main.home {
 
 .log > .hint { margin-top: -8px; }
 .log > .block-head { min-height: 0; }
-.day { display: grid; gap: 8px; }
+.day { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 .day-head { display: flex; align-items: baseline; gap: 10px; padding: 8px 4px 0; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
 .day-head b { font-weight: inherit; color: var(--text); }
 .day-head output { margin-left: auto; color: var(--led); text-shadow: 0 0 4px var(--led-glow); white-space: nowrap; }
-.entries { display: grid; gap: 8px; }
+/* flat rows, one line each: icon, type and description, the time in squares, the buttons */
+.entries { display: grid; grid-template-columns: minmax(0, 1fr); border-top: 1px solid rgba(255, 255, 255, 0.07); }
 .entry {
   --c: #8a8a86;
   display: flex;
   align-items: center;
   gap: 2px;
   padding-right: 6px;
-  border-radius: 14px;
-  background: var(--bg-tile);
-  box-shadow: var(--raised);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 .entry-main {
   flex: 1;
@@ -382,34 +367,33 @@ main.home {
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 58px;
-  padding: 8px 10px 8px 16px;
+  min-height: 48px;
+  padding: 10px 12px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 0;
   background: transparent;
   color: var(--text);
   text-align: left;
   text-shadow: inherit;
   cursor: pointer;
 }
-.entry-main:hover { background: rgba(0, 0, 0, 0.3); }
-.entry-body { flex: 1; display: grid; gap: 4px; min-width: 0; }
-.entry-name { font-size: 13px; line-height: 1.25; text-transform: uppercase; overflow-wrap: anywhere; }
-.entry-meta { color: var(--muted); font-size: 10px; line-height: 1.5; text-transform: uppercase; letter-spacing: 0.04em; }
-.entry-meta > span { white-space: nowrap; }
+.entry-main:hover { background: rgba(255, 255, 255, 0.04); }
+.entry-ico { flex: none; width: 18px; height: 18px; color: var(--c, var(--led)); }
+.entry-ico .ico { display: block; width: 100%; height: 100%; fill: currentColor; shape-rendering: crispEdges; }
+/* the type, then the description on the same line while it fits, else wrapping under it (two lines at most) */
+.entry-body { flex: 1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; min-width: 0; }
+.entry-name { flex: none; color: var(--muted); font-size: 13px; line-height: 1.25; text-transform: uppercase; }
+.entry-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; min-width: 0; max-width: 100%; overflow: hidden; overflow-wrap: anywhere; color: #fff; font-size: 12px; line-height: 1.3; }
 .entry-time { flex: none; color: var(--led); font-size: 13px; text-shadow: 0 0 5px var(--led); white-space: nowrap; }
-.entry-again { flex: none; display: none; color: var(--led); }
-.entry-again svg { display: block; width: 16px; height: 16px; filter: drop-shadow(0 0 3px var(--led-glow)); }
-.entry-main:hover .entry-again { display: block; }
+.pips { display: inline-grid; grid-template-columns: repeat(12, 7px); gap: 3px; vertical-align: middle; }
+.pips i { width: 7px; height: 7px; background: rgba(255, 255, 255, 0.08); }
+.pips i.on { background: var(--c, var(--led)); }
+.pips i.now { background: var(--c, var(--led)); animation: blink 1s steps(2) infinite; }
 .entry > .btn.icon { color: var(--muted); }
 .entry > .btn.icon:hover { color: var(--led); background: transparent; }
-.entry.running {
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: var(--sunken), 0 0 0 1px color-mix(in srgb, var(--c) 55%, transparent), 0 0 22px color-mix(in srgb, var(--c) 22%, transparent);
-}
-.entry.running .led { animation: blink 1s steps(2) infinite; }
-.entry.running .entry-name { color: var(--c); text-shadow: 0 0 6px var(--c); }
-.entry.running .entry-main:hover .entry-again { display: none; }
+.entry.running { background: color-mix(in srgb, var(--c) 10%, transparent); }
+.entry.running .entry-ico { animation: blink 1s steps(2) infinite; }
+.entry.running .entry-name { color: var(--c); }
 .more { justify-self: center; }
 
 /* ------------------------------------------------------------- chart */
@@ -542,8 +526,10 @@ body.has-player main { padding-bottom: calc(300px + env(safe-area-inset-bottom))
   .now-keys .hint { flex-basis: 100%; max-width: none; }
   .lcd .now-big { font-size: 44px; }
   .screen, .lcd { border-radius: 10px; }
-  .entry-main { gap: 10px; padding-left: 12px; }
+  .entry-main { gap: 12px; padding: 10px 8px 10px 10px; }
   .entry > .btn.icon { width: 32px; }
+  .pips { grid-template-columns: repeat(12, 5px); gap: 2px; }
+  .pips i { width: 5px; height: 5px; }
   .chart { grid-template-rows: 150px auto; }
   .dialog-body { padding: 16px 14px 18px; }
   .player { right: 8px; left: 8px; width: auto; bottom: calc(8px + env(safe-area-inset-bottom)); }

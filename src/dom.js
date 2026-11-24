@@ -37,6 +37,18 @@ export function bigDuration(min) {
   return `${Math.floor(min / 60)}${unit('unit.h')}${String(min % 60).padStart(2, '0')}${unit('unit.min')}`;
 }
 
+// A logged time as squares, one lit for every full five minutes, in rows of twelve (an hour a row).
+// The exact time is only the tooltip and the label. live: a practice that runs, whose next square
+// blinks while it fills. Markup.
+export function pipDuration(min, live = false) {
+  min = live ? Math.floor(min) : Math.round(min);
+  const lit = Math.floor(min / 5);
+  const slots = Math.max(1, Math.ceil((lit + (live ? 1 : 0)) / 12)) * 12;
+  const pips = Array.from({ length: slots }, (_, i) => `<i${i < lit ? ' class="on"' : live && i === lit ? ' class="now"' : ''}></i>`).join('');
+  const label = esc(duration(min));
+  return `<span class="pips" role="img" aria-label="${label}" title="${label}">${pips}</span>`;
+}
+
 // mm:ss, or h:mm:ss past an hour
 export function clock(ms) {
   const s = Math.max(0, Math.floor(ms / 1000));
@@ -62,7 +74,6 @@ export const icon = {
   out: stroke('M14 5h5v5M19 5l-8 8M17 14v5H5V7h5'),
   paste: stroke('M9 4h6v3H9zM8 5H6v15h12V5h-2'),
   play: svg('<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>'),
-  again: stroke('M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5'),
   settings: svg('<path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="16" cy="7" r="2.2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="10" cy="17" r="2.2" stroke="currentColor" stroke-width="2" fill="none"/>'),
 };
 

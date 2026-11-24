@@ -2,11 +2,11 @@
 // total and New practice) and the log of the last two weeks, newest first, by day. Tapping a practice
 // in the log starts it again; tapping the one that runs stops it.
 import { state, entries, running, spent, colorOfId } from './store.js';
-import { today, addDays, dayOf, dayLabel, timeOf } from './dates.js';
+import { today, addDays, dayOf, dayLabel } from './dates.js';
 import { t } from './i18n.js';
-import { esc, icon, duration, bigDuration, clock } from './dom.js';
+import { esc, icon, duration, bigDuration, pipDuration, clock } from './dom.js';
 import { instIcon } from './instIcons.js';
-import { instName, entryName, again, stop } from './entries.js';
+import { instName, again, stop } from './entries.js';
 import { youtube } from './links.js';
 import { openNew, openEdit } from './editor.js';
 
@@ -17,10 +17,9 @@ const instOf = e => {
   const i = state.data.instrument[e.instrumentId];
   return i && !i.deleted ? i : null; // a removed (archived) instrument still has its name
 };
-const instTag = e => {
-  const i = instOf(e);
-  return `<span class="mini-ico">${instIcon(i?.type)}</span>${esc(i ? instName(i) : '')}`;
-};
+// an instrument's icon, in its colour (--c), named by its tooltip
+const instIco = (i, cls) =>
+  `<span class="${cls}"${i ? ` role="img" aria-label="${esc(instName(i))}" title="${esc(instName(i))}"` : ' aria-hidden="true"'}>${instIcon(i?.type)}</span>`;
 
 const minutesSince = from => entries().reduce((a, e) => (dayOf(e.start) >= from ? a + spent(e) : a), 0) / 60000;
 
@@ -39,16 +38,13 @@ export function renderNow(el) {
   if (e) {
     el.innerHTML = `
       <div class="lcd now-lcd" style="--c:${colorOfId(e.instrumentId)}">
-        <p class="now-label"><span class="rec"><i></i>${esc(t('now.rec'))}</span><span>${esc(t('now.since', { time: timeOf(e.start) }))}</span>
-          <span class="now-today">${esc(t('now.today', { d: duration(todayMin) }))}</span></p>
+        <p class="now-label"><span class="rec"><i></i>${esc(t('now.rec'))}</span></p>
         <h2 class="now-big" data-clock data-start="${e.start}">${clock(Date.now() - e.start)}</h2>
-        <p class="now-what"><span class="led on" aria-hidden="true"></span><span>${esc(entryName(e))}</span></p>
-        <p class="now-meta">${e.text ? `${esc(t('type.' + e.type))} · ` : ''}${instTag(e)}</p>
+        <p class="now-what">${instIco(instOf(e), 'now-ico')}<span class="now-type">${esc(t('type.' + (e.type || 'other')))}</span>${e.text?.trim() ? `<span class="now-desc" title="${esc(e.text.trim())}">${esc(e.text.trim())}</span>` : ''}</p>
       </div>
       <div class="now-keys">
         <button type="button" class="btn start running" data-act="stop">${esc(t('now.stop'))}</button>
         ${e.link ? linkButton(e.link, true) : ''}
-        <button type="button" class="btn" data-act="new">${icon.plus}${esc(t('now.new'))}</button>
       </div>`;
     return;
   }
@@ -66,20 +62,17 @@ export function renderNow(el) {
 
 function row(e) {
   const run = !e.end;
-  const meta = [];
-  if (e.text) meta.push(esc(t('type.' + e.type)));
-  meta.push(instTag(e));
-  if (!e.noTime) meta.push(esc(timeOf(e.start)));
+  const i = instOf(e); // shown by its icon, in its colour
+  const text = (e.text || '').trim();
   return `
     <div class="entry${run ? ' running' : ''}" style="--c:${colorOfId(e.instrumentId)}">
       <button type="button" class="entry-main" data-act="${run ? 'stop' : 'again'}" data-id="${esc(e.id)}" title="${esc(t(run ? 'en.stopHint' : 'en.again'))}">
-        <span class="led on" aria-hidden="true"></span>
+        ${instIco(i, 'entry-ico')}
         <span class="entry-body">
-          <span class="entry-name">${esc(entryName(e))}</span>
-          <span class="entry-meta">${meta.map(m => `<span>${m}</span>`).join(' · ')}</span>
+          <span class="entry-name">${esc(t('type.' + (e.type || 'other')))}</span>
+          ${text ? `<span class="entry-desc" title="${esc(text)}">${esc(text)}</span>` : ''}
         </span>
-        <span class="entry-again" aria-hidden="true">${icon.again}</span>
-        <span class="entry-time">${run ? `<span class="rec"><i></i><span data-clock data-start="${e.start}">${clock(Date.now() - e.start)}</span></span>` : esc(duration(spent(e) / 60000))}</span>
+        <span class="entry-time">${run ? livePips(e.start, Date.now()) : pipDuration(spent(e) / 60000)}</span>
       </button>
       ${e.link ? linkButton(e.link) : ''}
       <button type="button" class="btn icon flat" data-act="edit" data-id="${esc(e.id)}" aria-label="${esc(t('en.edit'))}" title="${esc(t('en.edit'))}">${icon.edit}</button>
@@ -132,9 +125,18 @@ export function renderLog(el) {
 }
 
 // Every second while a practice runs (main.js): its clocks, and the page title.
+// the squares of the practice that runs; tick() redraws them when its minute changes
+const runMin = (start, now) => Math.floor((now - start) / 60000);
+const livePips = (start, now) =>
+  `<span data-pips data-start="${start}" data-min="${runMin(start, now)}">${pipDuration(runMin(start, now), true)}</span>`;
+
 export function tick() {
   const now = Date.now();
   document.querySelectorAll('[data-clock][data-start]').forEach(c => (c.textContent = clock(now - Number(c.dataset.start))));
+  document.querySelectorAll('[data-pips][data-start]').forEach(p => {
+    const min = runMin(Number(p.dataset.start), now);
+    if (String(min) !== p.dataset.min) p.outerHTML = livePips(Number(p.dataset.start), now);
+  });
   const e = running();
   document.title = e ? `● ${clock(now - e.start)} · Mlog` : 'Mlog';
 }

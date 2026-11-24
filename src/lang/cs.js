@@ -7,10 +7,8 @@ add('cs', {
   'unit.min': 'min',
 
   'now.todayLabel': 'Dnes',
-  'now.today': 'Dnes {d}',
   'now.week': 'Posledních 7 dní: {d}',
   'now.rec': 'REC',
-  'now.since': 'od {time}',
   'now.stop': 'Stop',
   'now.new': 'Nové cvičení',
   'now.hintFirst': 'Vyber nástroj a druh cvičení a stopky se spustí.',

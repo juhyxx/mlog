@@ -7,10 +7,8 @@ add('en', {
   'unit.min': 'min',
 
   'now.todayLabel': 'Today',
-  'now.today': 'Today {d}',
   'now.week': 'Last 7 days: {d}',
   'now.rec': 'REC',
-  'now.since': 'since {time}',
   'now.stop': 'Stop',
   'now.new': 'New practice',
   'now.hintFirst': 'Pick the instrument and the type of practice, and the timer starts.',
