@@ -37,13 +37,13 @@ export function bigDuration(min) {
   return `${Math.floor(min / 60)}${unit('unit.h')}${String(min % 60).padStart(2, '0')}${unit('unit.min')}`;
 }
 
-// A logged time as squares, one lit for every full five minutes, in rows of twelve (an hour a row).
+// A logged time as squares, one lit for every full minute, in rows of ten (most practices fit one row).
 // The exact time is only the tooltip and the label. live: a practice that runs, whose next square
 // blinks while it fills. Markup.
 export function pipDuration(min, live = false) {
   min = live ? Math.floor(min) : Math.round(min);
-  const lit = Math.floor(min / 5);
-  const slots = Math.max(1, Math.ceil((lit + (live ? 1 : 0)) / 12)) * 12;
+  const lit = min;
+  const slots = Math.max(1, Math.ceil((lit + (live ? 1 : 0)) / 10)) * 10;
   const pips = Array.from({ length: slots }, (_, i) => `<i${i < lit ? ' class="on"' : live && i === lit ? ' class="now"' : ''}></i>`).join('');
   const label = esc(duration(min));
   return `<span class="pips" role="img" aria-label="${label}" title="${label}">${pips}</span>`;

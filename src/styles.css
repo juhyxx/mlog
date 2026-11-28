@@ -385,7 +385,7 @@ main.home {
 .entry-name { flex: none; color: var(--muted); font-size: 13px; line-height: 1.25; text-transform: uppercase; }
 .entry-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; min-width: 0; max-width: 100%; overflow: hidden; overflow-wrap: anywhere; color: #fff; font-size: 12px; line-height: 1.3; }
 .entry-time { flex: none; color: var(--led); font-size: 13px; text-shadow: 0 0 5px var(--led); white-space: nowrap; }
-.pips { display: inline-grid; grid-template-columns: repeat(12, 7px); gap: 3px; vertical-align: middle; }
+.pips { display: inline-grid; grid-template-columns: repeat(10, 7px); gap: 3px; vertical-align: middle; }
 .pips i { width: 7px; height: 7px; background: rgba(255, 255, 255, 0.08); }
 .pips i.on { background: var(--c, var(--led)); }
 .pips i.now { background: var(--c, var(--led)); animation: blink 1s steps(2) infinite; }
@@ -528,7 +528,7 @@ body.has-player main { padding-bottom: calc(300px + env(safe-area-inset-bottom))
   .screen, .lcd { border-radius: 10px; }
   .entry-main { gap: 12px; padding: 10px 8px 10px 10px; }
   .entry > .btn.icon { width: 32px; }
-  .pips { grid-template-columns: repeat(12, 5px); gap: 2px; }
+  .pips { grid-template-columns: repeat(10, 5px); gap: 2px; }
   .pips i { width: 5px; height: 5px; }
   .chart { grid-template-rows: 150px auto; }
   .dialog-body { padding: 16px 14px 18px; }
